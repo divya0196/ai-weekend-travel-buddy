@@ -1,36 +1,45 @@
+# agents/food_agent.py
+
 from .base_agent import Agent
 import json
 
 class FoodAgent(Agent):
     def __init__(self):
         super().__init__(
-            role="Culinary Expert",
-            goal="Recommend top-rated restaurants, cafes, and street food near specific attractions, and add fun food tips.",
-            backstory="You are a seasoned food blogger with an encyclopedic knowledge of local cuisines. You know the best places to eat near every major landmark and can provide engaging, useful food tips."
+            role="Local Food Critic",
+            goal="Recommend top-rated and authentic dining experiences near given attractions.",
+            backstory="You are a passionate food blogger who lives to explore the culinary scene of every city. You know where to find the best meals, from fine dining restaurants to hidden street food stalls, and love sharing local must-try dishes."
         )
 
-    def find_food_spots(self, attractions_list):
-        attractions_str = json.dumps(attractions_list)
+    def recommend_food(self, destination, attractions):
+        attractions_str = ", ".join(attractions)
         user_prompt = f"""
-        For each attraction in the following list: {attractions_str}, recommend a nearby food spot.
-        Respond with a JSON object containing an array of recommendations.
+        For a trip to {destination}, I will be visiting these attractions: {attractions_str}.
         
-        Each recommendation should be an object with:
-        - "attraction_name": The name of the attraction.
-        - "restaurant_name": A recommended restaurant, cafe, or food spot.
-        - "local_dish_to_try": A famous local dish to try at or near this spot.
-        - "food_tip": A fun, short tip about the local food culture.
+        Your task is to recommend one great food spot near each attraction. 
+        For each recommendation, provide:
+        - "attraction_name": The name of the nearby attraction.
+        - "restaurant_name": The name of the recommended restaurant, cafe, or food stall.
+        - "cuisine_type": The type of food they serve (e.g., "Local Thai", "Italian", "Cafe").
+        - "must_try_dish": A signature or highly recommended dish.
 
+        Return the response as a JSON object with a single key "food_recommendations", which is a list of objects.
+        
         Example of desired JSON output:
         {{
           "food_recommendations": [
             {{
               "attraction_name": "Eiffel Tower",
-              "restaurant_name": "Creperie de l'Eiffel",
-              "local_dish_to_try": "Nutella Crepe",
-              "food_tip": "Look for a street vendor for the most authentic experience."
+              "restaurant_name": "Le Jules Verne",
+              "cuisine_type": "Modern French",
+              "must_try_dish": "Seared Scallops"
             }},
-            ...
+            {{
+              "attraction_name": "Louvre Museum",
+              "restaurant_name": "Le Fumoir",
+              "cuisine_type": "Classic French Bistro",
+              "must_try_dish": "Steak Frites"
+            }}
           ]
         }}
         """
