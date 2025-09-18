@@ -1,55 +1,49 @@
 # agents/explorer_agent.py
+
 from .base_agent import Agent
 import json
 
 class ExplorerAgent(Agent):
     def __init__(self):
         super().__init__(
-            role="Senior Travel Researcher",
-            goal="Identify and rank the top attractions and activities for a 2-day trip to a specific destination, including essential logistical details.",
-            backstory="You are an expert travel researcher with an encyclopedic knowledge of popular destinations. You can instantly recall key details like opening hours, typical entry fees, and estimated travel times between major landmarks. Your knowledge is based on general information, not real-time data."
+            role="Expert Tour Guide",
+            goal="Find the best attractions and create an optimized 2-day itinerary for a given destination.",
+            backstory="You are a seasoned world traveler with a knack for discovering hidden gems. You can quickly identify the must-see spots in any city and organize them into a logical and enjoyable itinerary, balancing popular sites with unique local experiences."
         )
 
-    def plan_activities(self, destination):
+    def find_attractions(self, destination):
         user_prompt = f"""
-        Generate a list of the top 5 must-see attractions and activities for a 2-day trip to {destination}.
-        For each attraction, provide the following details in a JSON object format:
+        Create a 2-day weekend itinerary for a trip to {destination}.
+        For each day, list 2-3 key attractions or activities. The plan should be logical, minimizing travel time between places.
+        
+        For each attraction, provide:
         - "name": The name of the attraction.
-        - "description": A brief description of the place.
-        - "category": The type of attraction (e.g., "Museum", "Landmark", "Park").
-        - "estimated_duration_hours": The time in hours a visit typically takes.
-        - "ranking": An integer from 1 to 5, with 1 being the most essential.
-        - "opening_hours": A plausible, common schedule (e.g., "9:00 AM - 6:00 PM, daily except Monday").
-        - "entry_fee_usd": An estimated entry fee in USD, if applicable (use "Free" for no fee).
+        - "description": A brief, engaging one-sentence description.
+        - "estimated_duration": How long to spend there (e.g., "2-3 hours").
+        - "best_time_to_visit": The best time of day to go (e.g., "Morning", "Afternoon").
 
-        Additionally, provide a section for travel times.
-        - "travel_times_minutes": An array of objects estimating travel time between the top ranked attractions.
-          - "from": The name of the starting attraction.
-          - "to": The name of the destination attraction.
-          - "time_minutes": Estimated travel time in minutes.
-
+        Return the response as a JSON object with a single key "itinerary" which contains an object with "day1" and "day2" as keys. Each day should be a list of attraction objects.
+        
         Example of desired JSON output:
         {{
-          "attractions": [
-            {{
-              "name": "Eiffel Tower",
-              "description": "An iconic iron lattice tower.",
-              "category": "Landmark",
-              "estimated_duration_hours": 2,
-              "ranking": 1,
-              "opening_hours": "9:30 AM - 11:45 PM, daily",
-              "entry_fee_usd": 28.30
-            }},
-            ...
-          ],
-          "travel_times_minutes": [
-            {{
-              "from": "Eiffel Tower",
-              "to": "Louvre Museum",
-              "time_minutes": 25
-            }},
-            ...
-          ]
+          "itinerary": {{
+            "day1": [
+              {{
+                "name": "Louvre Museum",
+                "description": "Home to masterpieces like the Mona Lisa and the Venus de Milo.",
+                "estimated_duration": "3-4 hours",
+                "best_time_to_visit": "Morning"
+              }}
+            ],
+            "day2": [
+               {{
+                "name": "Eiffel Tower",
+                "description": "Iconic iron tower offering breathtaking panoramic views of Paris.",
+                "estimated_duration": "2-3 hours",
+                "best_time_to_visit": "Evening"
+              }}
+            ]
+          }}
         }}
         """
         response = self.chat(user_prompt)
