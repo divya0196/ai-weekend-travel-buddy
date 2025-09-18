@@ -1,29 +1,32 @@
-# agents/base_agent.py
-
-from openai import OpenAI
 import os
+import openai
 
 class Agent:
     def __init__(self, role, goal, backstory):
-        self.role = role
-        self.goal = goal
-        self.backstory = backstory
-        self.llm = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        self.system_prompt = f"""
+        You are an AI assistant designed for a multi-agent travel planning system.
+        Your persona and instructions are defined below. Strictly adhere to them.
 
-    def run(self, task_description):
-        # A basic method to interact with the LLM
-        prompt = f"""
-        Role: {self.role}
-        Goal: {self.goal}
-        Backstory: {self.backstory}
-        
-        Task: {task_description}
+        Role: {role}
+        Goal: {goal}
+        Backstory: {backstory}
         """
-        response = self.llm.chat.completions.create(
-            model="gpt-4", 
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response.choices[0].message.content
+
+    def chat(self, user_message, additional_messages=None):
+        messages = [{"role": "system", "content": self.system_prompt}]
+        if additional_messages:
+            messages.extend(additional_messages)
+        messages.append({"role": "user", "content": user_message})
+
+        try:
+            response = self.client.chat.completions.create(
+                model="gpt-4o-mini",  # Using a cost-effective model
+                messages=messages,
+                response_format={"type": "json_object"}
+            )
+            return response.choices[0].message.content
+        except Exception as e:
+            return f"An error occurred: {e}"
+
+
