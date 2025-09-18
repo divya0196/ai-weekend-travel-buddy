@@ -33,3 +33,21 @@ Suggests local must-try dishes & food tips.
 Coordinates all agents.
 
 Builds the optimized 2-day itinerary.
+
+## Quickstart
+
+
+1. Clone the repo
+2. Create & activate a virtualenv
+
+
+```bash
+python -m venv venv
+source venv/bin/activate # Linux/macOS
+venv\\Scripts\\activate # Windows
+pip install -r requirements.txt
+
+## Set your OpenAI API key (environment variable):
+
+export OPENAI_API_KEY="your_api_key_here" # Linux/macOS
+setx OPENAI_API_KEY "your_api_key_here" # Windows
