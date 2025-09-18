@@ -1,3 +1,5 @@
+# agents/budget_agent.py
+
 from .base_agent import Agent
 import json
 
@@ -12,17 +14,17 @@ class BudgetAgent(Agent):
     def distribute_budget(self, total_budget, activities):
         activities_str = json.dumps(activities)
         user_prompt = f"""
-        Given a total budget of ${total_budget} and the following list of attractions: {activities_str},
+        Given a total budget of ${total_budget} for a 2-day trip and the following list of attractions: {activities_str},
         do the following tasks and respond in a JSON object format:
 
         1. Provide a breakdown of the total budget into categories:
-           - "accommodation": Estimated cost for a 2-night stay.
-           - "activities": Estimated cost for all activities.
-           - "food": Estimated cost for all meals.
+           - "accommodation": Estimated cost for a 2-night stay (budget-friendly).
+           - "activities": Estimated total cost for all listed activities.
+           - "food": Estimated cost for all meals over 2 days.
            - "transportation": Estimated cost for local travel.
 
-        2. For each of the attractions provided, estimate the individual cost.
-        - "attraction_costs": An array of objects, each with "name" and "estimated_cost".
+        2. For each of the attractions provided, estimate the individual cost (entry fee, etc.).
+         - "attraction_costs": An array of objects, each with "name" and "estimated_cost". If an attraction is free, the cost should be 0.
 
         Example of desired JSON output:
         {{
@@ -34,7 +36,7 @@ class BudgetAgent(Agent):
           }},
           "attraction_costs": [
             {{ "name": "Eiffel Tower", "estimated_cost": 25 }},
-            ...
+            {{ "name": "Central Park", "estimated_cost": 0 }}
           ]
         }}
         """
